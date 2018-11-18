@@ -11,6 +11,7 @@ import os
 logging.basicConfig(level=logging.DEBUG, format='(%(threadName)-9s) %(message)s',)
 
 BUF_SIZE = 10
+#generate our two queues. 
 q = queue.Queue(BUF_SIZE)
 q2 = queue.Queue(BUF_SIZE)
 
@@ -39,19 +40,19 @@ class ProducerThread(threading.Thread): #extract
         success,image = vidcap.read()
 
         print("Reading frame {} {} ".format(count, success))
-        while success:
-            if q.qsize() < 10: 
+        while success: #while we have something to extract. 
+            if q.qsize() < 10: #make sure our queue isn't too large 
                 # write the current frame out as a jpeg image
                 cv2.imwrite("{}/frame_{:04d}.jpg".format(outputDir, count), image)   
                 success,image = vidcap.read()
                 print('Reading frame {}'.format(count))
-                item = count 
-                q.put(item)
+                item = count #make our item hold our current count we just did. 
+                q.put(item) #push to our queue to ensure that the next thread pulls the right number.  
                 count += 1
         return
 
 class ConsumerThread(threading.Thread): #convert to grayscale 
-    def __init__(self, group=None, target=None, name=None,args=(), kwargs=None, verbose=None):
+    def __init__(self, group=None, target=None, name=None,args=(), kwargs=None, verbose=None): #just initialization. 
         super(ConsumerThread,self).__init__()
         self.target = target
         self.name = name
@@ -69,11 +70,11 @@ class ConsumerThread(threading.Thread): #convert to grayscale
 
         # load the next file
         inputFrame = cv2.imread(inFileName, cv2.IMREAD_COLOR)
-        while inputFrame is not None:
+        while inputFrame is not None: #make sure there is even a fram to display. 
             
-            if not q.empty():
-                if q2.qsize() < 10: 
-                    item = q.get()
+            if not q.empty(): #make sure we have something to take from 1st queue
+                if q2.qsize() < 10: #make sure our second queue doesn't get too large
+                    item = q.get()#get number to convert to grayscale currently 
                     print("Converting frame {}".format(item))
 
                     # convert the image to grayscale
@@ -87,7 +88,7 @@ class ConsumerThread(threading.Thread): #convert to grayscale
                     
                     
                     count += 1
-                    q2.put(item)
+                    q2.put(item) #now we want to push to the second queue our number for it to display. 
                     # generate input file name for the next frame
                     inFileName = "{}/frame_{:04d}.jpg".format(outputDir, item+1)
 
@@ -96,7 +97,7 @@ class ConsumerThread(threading.Thread): #convert to grayscale
         return
     
 class SecondConsumerThread(threading.Thread): #extract 
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None): #initializing my thread. 
         super(SecondConsumerThread,self).__init__()
         self.target = target
         self.name = name
@@ -118,9 +119,9 @@ class SecondConsumerThread(threading.Thread): #extract
         # load the frame
         frame = cv2.imread(frameFileName)
 
-        while frame is not None:
-            if not q2.empty():
-                item = q2.get()
+        while frame is not None:#make sure there is a frame available. 
+            if not q2.empty(): #make sure there is something in the queue to use. 
+                item = q2.get() #this grabs our next count for display. 
                 print("Displaying frame {}".format(item))
                 # Display the frame in a window called "Video"
                 cv2.imshow("Video", frame)
@@ -142,7 +143,6 @@ class SecondConsumerThread(threading.Thread): #extract
                 startTime = time.time()
                 
                 # get the next frame filename
-                count += 1
                 frameFileName = "{}/grayscale_{:04d}.jpg".format(outputDir, item + 1)
 
                 # Read the next frame file
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     dc = SecondConsumerThread(name = 'consumer2')#display 
 
     p.start()
-    time.sleep(2)
+    time.sleep(2) #put in a delay to let an initial queue to build for the consumer thread. 
     c.start()
     time.sleep(2) 
     dc.start()
