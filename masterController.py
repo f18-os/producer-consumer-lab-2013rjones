@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+#original prod-consumer queue idea taken from: https://www.bogotobogo.com/python/Multithread/python_multithreading_Synchronization_Producer_Consumer_using_Queue.php
+#then extended/modified to work as I needed it to. This was mainly used for the framework of multithreading. 
+
 import queue as queue
 import threading
 import time
