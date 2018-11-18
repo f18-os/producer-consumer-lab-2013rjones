@@ -44,5 +44,11 @@ them in sequence
 
 Note: You may have ancillary objects and method in order to make you're code easer to understand and implement.
 
+### masterController.py
+This creates two produce-consumer queues and separate threads to execute the logic from extractFrames.py, DisplayFrames.py, and ConvertToGrayscale.py. 
+This program runs by the user executing it using python3 masterController.py. 
+This program ensures that the queues between the different steps don't exceed 10. 
+
+
 
 
