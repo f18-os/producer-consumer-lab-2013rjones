@@ -166,6 +166,6 @@ if __name__ == '__main__':
     
     p.join()
     c.join()
-    dc.join()
+    dc.join() #these joins ensure we wait for the execution signals of all three threads is done before continuing. 
     
-    print('Execution of all threads done.')
+    print('Execution of all threads.')
