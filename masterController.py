@@ -164,3 +164,8 @@ if __name__ == '__main__':
     time.sleep(2) 
     dc.start()
     
+    p.join()
+    c.join()
+    dc.join()
+    
+    print('Execution of all threads done.')
